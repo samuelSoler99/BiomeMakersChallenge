@@ -26,8 +26,7 @@ and coding proficiency.
 ## Time limit
 
 Feel free to complete any of the challenges
-(you could add extra functionality if there is some skill you want to show us).
-We value your time so this challenge should take about **1 hour** to complete it.
+(you could add extra functionality if there is some skill you want to show us as the docker request asked below).
 
 ## Usage
 
@@ -43,6 +42,12 @@ To use it just execute `./run.sh` and navigate to `http://localhost:8000`
 
 The run command will take several minutes (around 5 minutes) to complete the first time
 it is executed because it has to create the full docker container. 
+
+After execution is done you have torun `bash.sh` and execute:
+* `npm ci`
+* `npm run hot &`
+
+In a optional way you can try to add these commands to the original dockerfile, it will be valued positively.
 
 While the container is running you can use these commands
 (not really needed until you want to use the artisan command
