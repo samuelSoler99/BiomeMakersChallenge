@@ -43,7 +43,7 @@ To use it just execute `./run.sh` and navigate to `http://localhost:8000`
 The run command will take several minutes (around 5 minutes) to complete the first time
 it is executed because it has to create the full docker container. 
 
-After execution is done you have torun `bash.sh` and execute:
+After docker is build you have to run bash.sh and execute:
 * `npm ci`
 * `npm run hot &`
 
