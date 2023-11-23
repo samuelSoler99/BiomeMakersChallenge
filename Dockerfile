@@ -1,7 +1,9 @@
-FROM php:8.0-cli
+FROM php:8.0.30-cli-bullseye
 
-LABEL org.opencontainers.image.authors="javier@biomemakers.com"
-
+# Set environment variables
+ENV NVM_DIR /home/biome/.nvm
+ENV NODE_VERSION 16.20.1
+ENV NPM_VERSION 7.24.0
 #
 # Install needed libraries
 #
@@ -12,7 +14,13 @@ RUN apt-get update && apt-get install -y \
     wget \
     git \
     vim \
-    sudo
+    sudo \
+    curl \
+    build-essential \
+    libssl-dev \
+    gnupg \
+    gnupg2 \
+    gnupg1
 
 #
 # PHP Extensions
@@ -20,7 +28,7 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-install \
     zip \
     pdo \
-    pdo_pgsql 
+    pdo_pgsql
 
 #
 # Composer
@@ -28,32 +36,8 @@ RUN docker-php-ext-install \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 #
-# Node
-#
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
-    apt-get install -y nodejs
-
-#
-# Postgresql
-#
-# https://www.postgresql.org/download/linux/debian/
-RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -  && \
-    apt-get update && \
-    apt-get -y install postgresql-12 && \
-    # Enable to also connect from the host
-    echo "listen_addresses = '*'" >> /etc/postgresql/12/main/postgresql.conf && \
-    echo "host  all  all 0.0.0.0/0 md5" >> /etc/postgresql/12/main/pg_hba.conf
-
-# Configure postgresql
-RUN service postgresql start && \
-    sudo -u postgres psql -c "create user biome with encrypted password 'biome';" && \
-    sudo -u postgres psql -c "create database biome;" && \
-    sudo -u postgres psql -c "grant all privileges on database biome to biome;"
-
-#
 # Arguments for the UID and GID, to run the docker with the same host user:gropu
-# 
+#
 ARG DOCKER_UID
 ARG DOCKER_GID
 
@@ -68,7 +52,38 @@ RUN groupadd -g ${DOCKER_GID} biome && \
 # Use the biome user
 #
 USER biome
+
+
+# Install NVM
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+
+# Load NVM script
+RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && nvm use default && npm install -g npm@$NPM_VERSION"
+
+# Add NVM to bash to automatically run every time a new shell is started
+RUN echo "source $NVM_DIR/nvm.sh" >> /home/biome/.bashrc
+
+USER root
+#
+# Postgresql
+#
+# https://www.postgresql.org/download/linux/debian/
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -  && \
+    apt-get update && \
+    apt-get -y install postgresql-12 && \
+    # Enable to also connect from the host
+    echo "listen_addresses = '*'" >> /etc/postgresql/12/main/postgresql.conf && \
+    echo "host  all  all 0.0.0.0/0 md5" >> /etc/postgresql/12/main/pg_hba.conf
+
+# Configure postgresql
+RUN service postgresql start && \
+    sudo -u postgres psql -c "create user biome with encrypted password 'biome';" && \
+    sudo -u postgres psql -c "create database biome;" && \
+    sudo -u postgres psql -c "grant all privileges on database biome to biome;"
+
 WORKDIR /app
+USER biome
 
 COPY --chown=biome . /app
 
