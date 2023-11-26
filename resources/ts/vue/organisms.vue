@@ -71,8 +71,8 @@ export default class OrganismsVue extends Vue {
         eventBus.$off('organismCreated', this.handleOrganismCreated);
     }
 
-    handleOrganismCreated(newOrganism: Organism) {
-        this.organisms.push(newOrganism)
+    handleOrganismCreated() {
+        this.loadOrganisms(this.meta.current_page)
     }
 
     async loadOrganisms(page = 1) {

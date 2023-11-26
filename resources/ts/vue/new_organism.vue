@@ -58,8 +58,8 @@ export default class NewOrganismVue extends Vue {
         this.msg = 'Adding new organism';
 
         try {
-            const response = await axios.post('/api/organisms/', data);
-            eventBus.$emit('organismCreated', response.data.organism);
+            await axios.post('/api/organisms/', data);
+            eventBus.$emit('organismCreated');
             this.msg = 'Success';
         } catch (e) {
             if (axios.isAxiosError(e) && e.response) {
