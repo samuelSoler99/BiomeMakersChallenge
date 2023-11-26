@@ -1,36 +1,28 @@
 <template>
-
-   <div>
-       <h2> Sample list ({{ samples.length }}) </h2>
-
+    <div>
+        <h2> Sample list ({{ samples.length }}) </h2>
         <table class="pure-table pure-table-horizontal">
             <thead>
-                <tr>
-                    <th>Sample code</th>
-                    <th>#Abundances</th>
-                    <th>Crop</th>
-                </tr>
+            <tr>
+                <th>Sample code</th>
+                <th>#Abundances</th>
+                <th>Crop</th>
+            </tr>
             </thead>
             <tbody>
-                <tr v-for="sample of samples" :key="sample.code">
-                    <td>{{ sample.code }}</td>
-                    <td>{{ sample.abundances_count }}</td>
-                    <!-- TODO: /api/samples does not provide crop -->
-                    <td></td>
-                </tr>
+            <tr v-for="sample of samples" :key="sample.code">
+                <td>{{ sample.code }}</td>
+                <td>{{ sample.abundances_count }}</td>
+                <td>{{ sample.crop.name }}</td>
+                <td></td>
+            </tr>
             </tbody>
         </table>
-
-   </div>
-
+    </div>
 </template>
 
-
-<style lang="scss" scoped >
-
-
+<style lang="scss" scoped>
 </style>
-
 
 <script lang="ts">
 
@@ -43,6 +35,9 @@ import axios from 'axios';
 type SampleT = {
     code: string;
     abundances_count: number;
+    crop: {
+        name: string;
+    }
 }
 
 /**
@@ -51,10 +46,10 @@ type SampleT = {
 @Component({})
 export default class SamplesVue extends Vue {
 
-    // The list of samples that we receive from the server 
+    // The list of samples that we receive from the server
     samples: SampleT[] = [];
 
-    mounted(){
+    mounted() {
         // Load the samples when the component gets mounted
         this.loadSamples();
     }
@@ -62,7 +57,7 @@ export default class SamplesVue extends Vue {
     /**
      * Recieve the samples from the api endpoint
      */
-    async loadSamples(){
+    async loadSamples() {
         this.samples = (await axios.get('/api/samples/')).data;
     }
 
