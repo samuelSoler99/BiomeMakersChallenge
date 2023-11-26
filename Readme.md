@@ -136,3 +136,11 @@ and they are removed with it.
 * Port 8001 is used for the hot reloader of webpack
 * Port 8002 is used for the PostgreSQL database.
 In case you want to connect from outside the dbname/user/password is all `biome`. You can use the `psql.sh` script which is is simpler.
+
+## Unit test
+
+ I try to add one unit test to the organism model, you can execute it
+ with `php artisan test tests/Unit/Model/OrganismTest.php`
+ but there is one issue and I dont have more time to fix it, where you run this test
+ you are reseting the db so its not finished yet, 
+ but as I say i dont have more time to configure a test database so please dont launch this test till you have check the rest of the challenge
