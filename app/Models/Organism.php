@@ -19,9 +19,9 @@ class Organism extends Model
     use HasFactory;
 
     /**
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function getTopOrganismsWithCrops()
+    public function getTopOrganismsWithCrops(): \Illuminate\Support\Collection
     {
         return $this->select('organisms.*', DB::raw('COUNT(samples.id) as sample_count'))
             ->leftJoin('abundances', 'organisms.id', '=', 'abundances.organism_id')

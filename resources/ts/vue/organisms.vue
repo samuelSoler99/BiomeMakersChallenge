@@ -2,7 +2,7 @@
     <div>
         <h2> Organism list ({{ organisms.length }}) </h2>
 
-        <div v-if="organisms.length >1">
+        <div v-if="organisms.length >= 1">
             <ul v-for="organism in organisms" :key="organism.id">
                 <Organism_item :organism="organism"></Organism_item>
             </ul>
